@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saisie des Notes - Pronote</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --background-color: #f4f7f6;
+            --text-color: #333;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Saisie des Notes</h1>
+    
+    <form id="noteForm">
+        <div class="form-group">
+            <label for="classe">Classe</label>
+            <select id="classe" required>
+                <option value="">-- Choisir une classe --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="eleve">Nom de l'élève</label>
+            <select id="eleve" required disabled>
+                <option value="">-- Choisir un élève --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="note">Note sur 20</label>
+            <input type="number" id="note" min="0" max="20" step="0.25" placeholder="Ex: 15.5" required>
+        </div>
+
+        <button type="submit" id="submitBtn">Enregistrer la note</button>
+    </form>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    // Les données des élèves intégrées
+    const studentsData = {
+      "302": [
+        "AMRI Younes", "ANAASSOUME Wessal", "BEAUCERF Aaron", "BEN KALLAL Lina", "BONAFOUS--DUBREUIL Lylou", "BRUSTET-DUCREUX Sasha", "DECAIX Clara", "EDDAHBI Karim", "FABRIES Malicia", "GENCE Atilio", "GONCALVES Maély", "GUFFROY Thomas", "HAMI Salma", "HURCET Kais", "KAOUANE Samir", "KHÉLAÏFIA Oumrane", "LE BECACHEL Louane", "MAHDAOUI Camilia", "MAURIES Charlotte", "MAYMOUN YAKOUB Ismail", "PEREIRA-AMO Fabio", "ROBERT Kenzo", "TABOUCHE BENMOKKADEM Idriss"
+      ],
+      "303": [
+        "ALEGRE Anaelle", "BUSSARD Amaëlys", "CAPILLION Leeloo", "CARDONA Tom", "CORDEIRO Hugo", "DA CUNHA Angelo", "DAOUDI Lina", "DEHU Milo", "DRIS Jounaïdi", "EL FAKIR Camélia", "FAURE Lola", "LEMIRRE-JOSSET William", "LIGNEUL Damien", "MAJDOUBI Wassil", "MANSOURI Syrine", "NESPOULOUS Izia", "PAQUENTIN Davy", "PLANCHENAULT FELLER Heather", "RAMOS Julia", "RICARDO Maéva", "TALBOT Apreel", "TEFFAHI Hinde", "ZAYAN Mohamed"
+      ],
+      "304": [
+        "BLASCO-STEVANOVIC Nolan", "BONNOT SPENLE Owen", "BOUQUIN Noah", "BOUSSEDRA Naim", "CHAFAI Salim", "CRUZ-SOUET Tao", "DUBAC Kelian", "EL HALFAOUI Kamélia", "HENNON Oscar", "IDIRI Yaëlle", "JULIEN-CALVET Aude", "KERARMI Shayma", "KHELLAFI--KAMRAOUI Sohane", "KHITER Tesnime", "MESSOUDI KIKI Wassima", "MONNIER-BENETEAU DE LAPRAIRIE Lylia", "MULLER Ines", "PLAIRE Emrys", "RIBEIRO Elsa", "ROMIEU Neïla", "ROQUES Kewanee", "SERY Loanne", "TOUSET Ilena", "ZAOUBAI Hamza"
+      ],
+      "305": [
+        "AZEROUAL Mouna", "BAISSE Charlotte", "BARITAUD Alycia", "BATEHO Elikia Nolan", "BAYOL Rhaiss", "BRISEPIERRE-RODRIGUEZ Loucas", "CAUHEPE Thyméo", "CHASSAGNAT Luca", "DROCOURT Lena", "ENJALBERT Chloé", "ENJALBERT Emma", "ETTANICH BAUDRUN Lila", "FEDOU Rachelle", "GOGUERY Roxane", "LAMRABTI Sidi-Brahim", "MARECHAL Abraham", "PAULIN Loréna", "PAUTHE Lucie", "POUGET LORETO Kalliste", "RAMIER Emmie", "RIOU Djavan", "THEMINES Maëva", "THEVENIN Aaron", "VINCENT Mickaël"
+      ],
+      "306": [
+        "ABEJEAN Ethan", "AROUROU Dora", "BAHMAD SOUIRI Hafssa", "BATIGNE Leona", "BENMANSOUR Fares", "BIRBES Mathias", "CHERKAOUI Marwane", "DE BAERDEMACKER VIDAL Yhan", "DEGREMONT Esteban", "GIENDAJ-LARROCHE Lohan", "HERAL Yael", "JOFFRE Jade", "MAGRON Juliette", "METAHRI Rida", "NEANI Sana", "ORFAO Cassandra", "OUNIR BADDOU Maryam", "OUSIDI Aymann", "PAULIN Auriane", "PETIT HOUGUENADE Sean", "REMAUD Loénie", "SALEM Maxime", "VIGUIER Léna"
+      ],
+      "307": [
+        "ABDAOUI Abdelmoughith", "AFKIR Amine", "AMPONSAH Emmanuel", "AZOUGAGH Saoussen", "AZRAGUE Manal", "BELLIERES Cassandra", "CHANCELLE Enzo", "CNUDDE LECLER Cerise", "DANDINE Maxime", "FERREIRA Dynis", "KESSEIRI Fatma", "LOPEZ Lucie", "LOPEZ Raphaël", "MANSOURI Rehanna", "MARCUS Diego", "MASSON Eunice", "MAZANIELLO Nino", "PAU Louise", "PEREZ-MICOULAS Alyzée", "RODRIGUES VALERIO Alyssia", "SALVAN Quentin", "TORRES JARIA Leonor", "VIVES Chloé"
+      ]
+    };
+
+    // URL de votre script Google Apps
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwyV6YupoZQA0J4YFTuHRB-hVtaU_otfThV70m5K-cSlfMZmUeUIvl89zKoOJEioqCH7w/exec';
+
+    const classeSelect = document.getElementById('classe');
+    const eleveSelect = document.getElementById('eleve');
+    const noteForm = document.getElementById('noteForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageDiv = document.getElementById('message');
+
+    // Remplir les classes
+    Object.keys(studentsData).forEach(classe => {
+        const option = document.createElement('option');
+        option.value = classe;
+        option.textContent = 'Classe ' + classe;
+        classeSelect.appendChild(option);
+    });
+
+    // Gérer le changement de classe
+    classeSelect.addEventListener('change', function() {
+        const selectedClasse = this.value;
+        eleveSelect.innerHTML = '<option value="">-- Choisir un élève --</option>';
+        
+        if (selectedClasse) {
+            studentsData[selectedClasse].forEach(eleve => {
+                const option = document.createElement('option');
+                option.value = eleve;
+                option.textContent = eleve;
+                eleveSelect.appendChild(option);
+            });
+            eleveSelect.disabled = false;
+        } else {
+            eleveSelect.disabled = true;
+        }
+    });
+
+    // Gérer la soumission du formulaire
+    noteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const data = {
+            classe: classeSelect.value,
+            eleve: eleveSelect.value,
+            note: document.getElementById('note').value
+        };
+
+        // UI Feedback
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading"></span> Envoi en cours...';
+        messageDiv.style.display = 'none';
+
+        // Envoi vers Google Sheets via Apps Script
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Important pour Google Apps Script
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            showMessage('Note enregistrée avec succès pour ' + data.eleve + ' !', 'success');
+            document.getElementById('note').value = '';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Enregistrer la note';
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showMessage('Une erreur est survenue lors de l\'enregistrement.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Enregistrer la note';
+        });
+    });
+
+    function showMessage(text, type) {
+        messageDiv.textContent = text;
+        messageDiv.className = type;
+        messageDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
