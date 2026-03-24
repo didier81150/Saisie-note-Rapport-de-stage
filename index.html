@@ -624,7 +624,6 @@
                 <td>${r.classe || '—'}</td>
                 <td>${r.eleve  || '—'}</td>
                 <td>${noteBadge(r.note)}</td>
-                <td style="color:var(--text-muted);font-size:0.8rem;">${r.date || '—'}</td>
             </tr>`).join('');
 
         container.innerHTML = `
@@ -635,7 +634,6 @@
                             <th>Classe</th>
                             <th>Élève</th>
                             <th>Note</th>
-                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>${rows}</tbody>
