@@ -4,211 +4,485 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saisie des Notes - Pronote</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --success-color: #27ae60;
-            --background-color: #f4f7f6;
-            --text-color: #333;
+            --primary: #1a2332;
+            --surface: #ffffff;
+            --surface-2: #f7f8fa;
+            --border: #e8ebf0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --error: #ef4444;
+            --error-bg: #fef2f2;
+            --text: #1a2332;
+            --text-muted: #6b7280;
+            --note-high: #10b981;
+            --note-mid: #f59e0b;
+            --note-low: #ef4444;
+            --radius: 10px;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface-2);
+            color: var(--text);
             min-height: 100vh;
-            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
         }
 
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        .app-header {
             width: 100%;
-            max-width: 450px;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
+            max-width: 720px;
             margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .form-group {
-            margin-bottom: 1.2rem;
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
+
+        .app-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .app-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Tabs */
+        .tabs {
+            width: 100%;
+            max-width: 720px;
+            display: flex;
+            gap: 0;
+            background: var(--border);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 7px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--accent);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn svg { width: 16px; height: 16px; }
+
+        /* Card */
+        .card {
+            background: var(--surface);
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            padding: 2rem;
+            width: 100%;
+            max-width: 720px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        /* Form */
+        .form-group { margin-bottom: 1.2rem; }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--secondary-color);
+            margin-bottom: 0.45rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text-muted);
         }
 
-        select, input {
+        select, input[type="number"] {
             width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
+            padding: 0.7rem 0.9rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            background: var(--surface);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.9rem center;
         }
+
+        input[type="number"] { background-image: none; }
 
         select:focus, input:focus {
             outline: none;
-            border-color: var(--accent-color);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
         }
 
-        button {
-            width: 100%;
-            padding: 1rem;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 1rem;
-        }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        button:disabled {
-            background-color: #bdc3c7;
+        select:disabled {
+            background-color: var(--surface-2);
+            color: var(--text-muted);
             cursor: not-allowed;
         }
 
-        #message {
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-primary:active:not(:disabled) { transform: scale(0.99); }
+        .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* Message */
+        .message {
             margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
+            padding: 0.8rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
             display: none;
         }
 
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
+        .message.success { background: var(--success-bg); color: #065f46; border: 1px solid #a7f3d0; display: block; }
+        .message.error { background: var(--error-bg); color: #7f1d1d; border: 1px solid #fca5a5; display: block; }
 
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+        /* Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-            vertical-align: middle;
+            animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === VISUALISATION === */
+        #view-panel { display: none; }
+
+        .view-controls {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .view-controls select {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-load {
+            padding: 0.7rem 1.2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-load:hover { background: var(--accent-hover); }
+        .btn-load:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        /* Stats bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--surface-2);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        thead th {
+            background: var(--surface-2);
+            padding: 0.65rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--surface-2); }
+
+        td {
+            padding: 0.65rem 1rem;
+            color: var(--text);
+        }
+
+        .note-badge {
+            display: inline-block;
+            font-family: 'DM Mono', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+        }
+
+        .note-high { background: #ecfdf5; color: #065f46; }
+        .note-mid  { background: #fffbeb; color: #92400e; }
+        .note-low  { background: #fef2f2; color: #7f1d1d; }
+
+        /* Empty / Loading state */
+        .state-placeholder {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .state-placeholder .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .section-sep {
+            height: 1px;
+            background: var(--border);
+            margin: 1.2rem 0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Saisie des Notes</h1>
-    
-    <form id="noteForm">
-        <div class="form-group">
-            <label for="classe">Classe</label>
-            <select id="classe" required>
-                <option value="">-- Choisir une classe --</option>
+<div class="app-header">
+    <div class="app-icon">📝</div>
+    <div>
+        <div class="app-title">Carnet de notes</div>
+        <div class="app-subtitle">Collège Louis Pasteur — Graulhet</div>
+    </div>
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('saisie', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/><path d="M17.5 2.5a2.121 2.121 0 013 3L12 14l-4 1 1-4 7.5-7.5z"/></svg>
+        Saisie
+    </button>
+    <button class="tab-btn" onclick="switchTab('visualisation', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Visualiser les notes
+    </button>
+</div>
+
+<div class="card">
+
+    <!-- PANNEAU SAISIE -->
+    <div id="tab-saisie" class="tab-panel active">
+        <p class="card-title">Enregistrer une note</p>
+
+        <form id="noteForm">
+            <div class="form-group">
+                <label for="classe">Classe</label>
+                <select id="classe" required>
+                    <option value="">— Choisir une classe —</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="eleve">Élève</label>
+                <select id="eleve" required disabled>
+                    <option value="">— Choisir un élève —</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="note">Note sur 20</label>
+                <input type="number" id="note" min="0" max="20" step="0.25" placeholder="Ex : 15,5" required>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">
+                Enregistrer la note
+            </button>
+        </form>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <!-- PANNEAU VISUALISATION -->
+    <div id="tab-visualisation" class="tab-panel">
+        <p class="card-title">Notes enregistrées</p>
+
+        <div class="view-controls">
+            <select id="view-classe">
+                <option value="">— Toutes les classes —</option>
             </select>
-        </div>
-
-        <div class="form-group">
-            <label for="eleve">Nom de l'élève</label>
-            <select id="eleve" required disabled>
-                <option value="">-- Choisir un élève --</option>
+            <select id="view-eleve" disabled>
+                <option value="">— Tous les élèves —</option>
             </select>
+            <button class="btn-load" id="loadBtn" onclick="loadNotes()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+                Charger
+            </button>
         </div>
 
-        <div class="form-group">
-            <label for="note">Note sur 20</label>
-            <input type="number" id="note" min="0" max="20" step="0.25" placeholder="Ex: 15.5" required>
+        <div id="stats-bar" class="stats-bar" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-count">—</div>
+                <div class="stat-label">Notes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-avg">—</div>
+                <div class="stat-label">Moyenne</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-max">—</div>
+                <div class="stat-label">Max</div>
+            </div>
         </div>
 
-        <button type="submit" id="submitBtn">Enregistrer la note</button>
-    </form>
+        <div id="notes-container">
+            <div class="state-placeholder">
+                <div class="icon">🔍</div>
+                Sélectionnez une classe et cliquez sur <strong>Charger</strong>
+            </div>
+        </div>
+    </div>
 
-    <div id="message"></div>
 </div>
 
 <script>
-    // Les données des élèves intégrées
     const studentsData = {
-      "302": [
-        "AMRI Younes", "ANAASSOUME Wessal", "BEAUCERF Aaron", "BEN KALLAL Lina", "BONAFOUS--DUBREUIL Lylou", "BRUSTET-DUCREUX Sasha", "DECAIX Clara", "EDDAHBI Karim", "FABRIES Malicia", "GENCE Atilio", "GONCALVES Maély", "GUFFROY Thomas", "HAMI Salma", "HURCET Kais", "KAOUANE Samir", "KHÉLAÏFIA Oumrane", "LE BECACHEL Louane", "MAHDAOUI Camilia", "MAURIES Charlotte", "MAYMOUN YAKOUB Ismail", "PEREIRA-AMO Fabio", "ROBERT Kenzo", "TABOUCHE BENMOKKADEM Idriss"
-      ],
-      "303": [
-        "ALEGRE Anaelle", "BUSSARD Amaëlys", "CAPILLION Leeloo", "CARDONA Tom", "CORDEIRO Hugo", "DA CUNHA Angelo", "DAOUDI Lina", "DEHU Milo", "DRIS Jounaïdi", "EL FAKIR Camélia", "FAURE Lola", "LEMIRRE-JOSSET William", "LIGNEUL Damien", "MAJDOUBI Wassil", "MANSOURI Syrine", "NESPOULOUS Izia", "PAQUENTIN Davy", "PLANCHENAULT FELLER Heather", "RAMOS Julia", "RICARDO Maéva", "TALBOT Apreel", "TEFFAHI Hinde", "ZAYAN Mohamed"
-      ],
-      "304": [
-        "BLASCO-STEVANOVIC Nolan", "BONNOT SPENLE Owen", "BOUQUIN Noah", "BOUSSEDRA Naim", "CHAFAI Salim", "CRUZ-SOUET Tao", "DUBAC Kelian", "EL HALFAOUI Kamélia", "HENNON Oscar", "IDIRI Yaëlle", "JULIEN-CALVET Aude", "KERARMI Shayma", "KHELLAFI--KAMRAOUI Sohane", "KHITER Tesnime", "MESSOUDI KIKI Wassima", "MONNIER-BENETEAU DE LAPRAIRIE Lylia", "MULLER Ines", "PLAIRE Emrys", "RIBEIRO Elsa", "ROMIEU Neïla", "ROQUES Kewanee", "SERY Loanne", "TOUSET Ilena", "ZAOUBAI Hamza"
-      ],
-      "305": [
-        "AZEROUAL Mouna", "BAISSE Charlotte", "BARITAUD Alycia", "BATEHO Elikia Nolan", "BAYOL Rhaiss", "BRISEPIERRE-RODRIGUEZ Loucas", "CAUHEPE Thyméo", "CHASSAGNAT Luca", "DROCOURT Lena", "ENJALBERT Chloé", "ENJALBERT Emma", "ETTANICH BAUDRUN Lila", "FEDOU Rachelle", "GOGUERY Roxane", "LAMRABTI Sidi-Brahim", "MARECHAL Abraham", "PAULIN Loréna", "PAUTHE Lucie", "POUGET LORETO Kalliste", "RAMIER Emmie", "RIOU Djavan", "THEMINES Maëva", "THEVENIN Aaron", "VINCENT Mickaël"
-      ],
-      "306": [
-        "ABEJEAN Ethan", "AROUROU Dora", "BAHMAD SOUIRI Hafssa", "BATIGNE Leona", "BENMANSOUR Fares", "BIRBES Mathias", "CHERKAOUI Marwane", "DE BAERDEMACKER VIDAL Yhan", "DEGREMONT Esteban", "GIENDAJ-LARROCHE Lohan", "HERAL Yael", "JOFFRE Jade", "MAGRON Juliette", "METAHRI Rida", "NEANI Sana", "ORFAO Cassandra", "OUNIR BADDOU Maryam", "OUSIDI Aymann", "PAULIN Auriane", "PETIT HOUGUENADE Sean", "REMAUD Loénie", "SALEM Maxime", "VIGUIER Léna"
-      ],
-      "307": [
-        "ABDAOUI Abdelmoughith", "AFKIR Amine", "AMPONSAH Emmanuel", "AZOUGAGH Saoussen", "AZRAGUE Manal", "BELLIERES Cassandra", "CHANCELLE Enzo", "CNUDDE LECLER Cerise", "DANDINE Maxime", "FERREIRA Dynis", "KESSEIRI Fatma", "LOPEZ Lucie", "LOPEZ Raphaël", "MANSOURI Rehanna", "MARCUS Diego", "MASSON Eunice", "MAZANIELLO Nino", "PAU Louise", "PEREZ-MICOULAS Alyzée", "RODRIGUES VALERIO Alyssia", "SALVAN Quentin", "TORRES JARIA Leonor", "VIVES Chloé"
-      ]
+      "302": ["AMRI Younes","ANAASSOUME Wessal","BEAUCERF Aaron","BEN KALLAL Lina","BONAFOUS--DUBREUIL Lylou","BRUSTET-DUCREUX Sasha","DECAIX Clara","EDDAHBI Karim","FABRIES Malicia","GENCE Atilio","GONCALVES Maély","GUFFROY Thomas","HAMI Salma","HURCET Kais","KAOUANE Samir","KHÉLAÏFIA Oumrane","LE BECACHEL Louane","MAHDAOUI Camilia","MAURIES Charlotte","MAYMOUN YAKOUB Ismail","PEREIRA-AMO Fabio","ROBERT Kenzo","TABOUCHE BENMOKKADEM Idriss"],
+      "303": ["ALEGRE Anaelle","BUSSARD Amaëlys","CAPILLION Leeloo","CARDONA Tom","CORDEIRO Hugo","DA CUNHA Angelo","DAOUDI Lina","DEHU Milo","DRIS Jounaïdi","EL FAKIR Camélia","FAURE Lola","LEMIRRE-JOSSET William","LIGNEUL Damien","MAJDOUBI Wassil","MANSOURI Syrine","NESPOULOUS Izia","PAQUENTIN Davy","PLANCHENAULT FELLER Heather","RAMOS Julia","RICARDO Maéva","TALBOT Apreel","TEFFAHI Hinde","ZAYAN Mohamed"],
+      "304": ["BLASCO-STEVANOVIC Nolan","BONNOT SPENLE Owen","BOUQUIN Noah","BOUSSEDRA Naim","CHAFAI Salim","CRUZ-SOUET Tao","DUBAC Kelian","EL HALFAOUI Kamélia","HENNON Oscar","IDIRI Yaëlle","JULIEN-CALVET Aude","KERARMI Shayma","KHELLAFI--KAMRAOUI Sohane","KHITER Tesnime","MESSOUDI KIKI Wassima","MONNIER-BENETEAU DE LAPRAIRIE Lylia","MULLER Ines","PLAIRE Emrys","RIBEIRO Elsa","ROMIEU Neïla","ROQUES Kewanee","SERY Loanne","TOUSET Ilena","ZAOUBAI Hamza"],
+      "305": ["AZEROUAL Mouna","BAISSE Charlotte","BARITAUD Alycia","BATEHO Elikia Nolan","BAYOL Rhaiss","BRISEPIERRE-RODRIGUEZ Loucas","CAUHEPE Thyméo","CHASSAGNAT Luca","DROCOURT Lena","ENJALBERT Chloé","ENJALBERT Emma","ETTANICH BAUDRUN Lila","FEDOU Rachelle","GOGUERY Roxane","LAMRABTI Sidi-Brahim","MARECHAL Abraham","PAULIN Loréna","PAUTHE Lucie","POUGET LORETO Kalliste","RAMIER Emmie","RIOU Djavan","THEMINES Maëva","THEVENIN Aaron","VINCENT Mickaël"],
+      "306": ["ABEJEAN Ethan","AROUROU Dora","BAHMAD SOUIRI Hafssa","BATIGNE Leona","BENMANSOUR Fares","BIRBES Mathias","CHERKAOUI Marwane","DE BAERDEMACKER VIDAL Yhan","DEGREMONT Esteban","GIENDAJ-LARROCHE Lohan","HERAL Yael","JOFFRE Jade","MAGRON Juliette","METAHRI Rida","NEANI Sana","ORFAO Cassandra","OUNIR BADDOU Maryam","OUSIDI Aymann","PAULIN Auriane","PETIT HOUGUENADE Sean","REMAUD Loénie","SALEM Maxime","VIGUIER Léna"],
+      "307": ["ABDAOUI Abdelmoughith","AFKIR Amine","AMPONSAH Emmanuel","AZOUGAGH Saoussen","AZRAGUE Manal","BELLIERES Cassandra","CHANCELLE Enzo","CNUDDE LECLER Cerise","DANDINE Maxime","FERREIRA Dynis","KESSEIRI Fatma","LOPEZ Lucie","LOPEZ Raphaël","MANSOURI Rehanna","MARCUS Diego","MASSON Eunice","MAZANIELLO Nino","PAU Louise","PEREZ-MICOULAS Alyzée","RODRIGUES VALERIO Alyssia","SALVAN Quentin","TORRES JARIA Leonor","VIVES Chloé"]
     };
 
-    // URL de votre script Google Apps
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwyV6YupoZQA0J4YFTuHRB-hVtaU_otfThV70m5K-cSlfMZmUeUIvl89zKoOJEioqCH7w/exec';
 
-    const classeSelect = document.getElementById('classe');
-    const eleveSelect = document.getElementById('eleve');
-    const noteForm = document.getElementById('noteForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const messageDiv = document.getElementById('message');
+    // ── Init selects ──────────────────────────────────────────
+    const classeSelect  = document.getElementById('classe');
+    const eleveSelect   = document.getElementById('eleve');
+    const viewClasse    = document.getElementById('view-classe');
+    const viewEleve     = document.getElementById('view-eleve');
 
-    // Remplir les classes
-    Object.keys(studentsData).forEach(classe => {
-        const option = document.createElement('option');
-        option.value = classe;
-        option.textContent = 'Classe ' + classe;
-        classeSelect.appendChild(option);
+    Object.keys(studentsData).forEach(c => {
+        [classeSelect, viewClasse].forEach(sel => {
+            const opt = document.createElement('option');
+            opt.value = c; opt.textContent = 'Classe ' + c;
+            sel.appendChild(opt);
+        });
     });
 
-    // Gérer le changement de classe
+    // Saisie : classe → élève
     classeSelect.addEventListener('change', function() {
-        const selectedClasse = this.value;
-        eleveSelect.innerHTML = '<option value="">-- Choisir un élève --</option>';
-        
-        if (selectedClasse) {
-            studentsData[selectedClasse].forEach(eleve => {
-                const option = document.createElement('option');
-                option.value = eleve;
-                option.textContent = eleve;
-                eleveSelect.appendChild(option);
+        eleveSelect.innerHTML = '<option value="">— Choisir un élève —</option>';
+        if (this.value) {
+            studentsData[this.value].forEach(e => {
+                const o = document.createElement('option');
+                o.value = e; o.textContent = e;
+                eleveSelect.appendChild(o);
             });
             eleveSelect.disabled = false;
         } else {
@@ -216,51 +490,158 @@
         }
     });
 
-    // Gérer la soumission du formulaire
+    // Visualisation : classe → élève
+    viewClasse.addEventListener('change', function() {
+        viewEleve.innerHTML = '<option value="">— Tous les élèves —</option>';
+        if (this.value) {
+            studentsData[this.value].forEach(e => {
+                const o = document.createElement('option');
+                o.value = e; o.textContent = e;
+                viewEleve.appendChild(o);
+            });
+            viewEleve.disabled = false;
+        } else {
+            viewEleve.disabled = true;
+        }
+    });
+
+    // ── Tabs ─────────────────────────────────────────────────
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // ── Saisie ───────────────────────────────────────────────
+    const noteForm  = document.getElementById('noteForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const msgDiv    = document.getElementById('message');
+
     noteForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const data = {
             classe: classeSelect.value,
-            eleve: eleveSelect.value,
-            note: document.getElementById('note').value
+            eleve:  eleveSelect.value,
+            note:   document.getElementById('note').value
         };
 
-        // UI Feedback
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loading"></span> Envoi en cours...';
-        messageDiv.style.display = 'none';
+        submitBtn.innerHTML = '<span class="spinner"></span> Envoi…';
+        msgDiv.className = 'message';
+        msgDiv.style.display = 'none';
 
-        // Envoi vers Google Sheets via Apps Script
         fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors', // Important pour Google Apps Script
+            mode: 'no-cors',
             cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
         .then(() => {
-            showMessage('Note enregistrée avec succès pour ' + data.eleve + ' !', 'success');
+            showMsg('Note enregistrée pour ' + data.eleve + ' ✓', 'success');
             document.getElementById('note').value = '';
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Enregistrer la note';
         })
-        .catch(error => {
-            console.error('Erreur:', error);
-            showMessage('Une erreur est survenue lors de l\'enregistrement.', 'error');
+        .catch(() => showMsg('Erreur lors de l\'enregistrement.', 'error'))
+        .finally(() => {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Enregistrer la note';
         });
     });
 
-    function showMessage(text, type) {
-        messageDiv.textContent = text;
-        messageDiv.className = type;
-        messageDiv.style.display = 'block';
+    function showMsg(text, type) {
+        msgDiv.textContent = text;
+        msgDiv.className = 'message ' + type;
+    }
+
+    // ── Visualisation ────────────────────────────────────────
+    async function loadNotes() {
+        const loadBtn   = document.getElementById('loadBtn');
+        const container = document.getElementById('notes-container');
+        const statsBar  = document.getElementById('stats-bar');
+        const classeVal = viewClasse.value;
+        const eleveVal  = viewEleve.value;
+
+        loadBtn.disabled = true;
+        loadBtn.innerHTML = '<span class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff;width:13px;height:13px;"></span> Chargement…';
+        container.innerHTML = '<div class="state-placeholder"><div class="icon">⏳</div>Récupération des données…</div>';
+        statsBar.style.display = 'none';
+
+        // Construire l'URL avec paramètres GET
+        let url = WEB_APP_URL + '?action=get';
+        if (classeVal) url += '&classe=' + encodeURIComponent(classeVal);
+        if (eleveVal)  url += '&eleve='  + encodeURIComponent(eleveVal);
+
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const json = await resp.json();
+            renderNotes(json);
+        } catch(err) {
+            container.innerHTML = `
+                <div class="state-placeholder">
+                    <div class="icon">⚠️</div>
+                    Impossible de charger les notes.<br>
+                    <small style="color:#9ca3af;margin-top:0.4rem;display:block;">Vérifiez que votre Apps Script expose un doGet() et retourne du JSON.</small>
+                </div>`;
+        } finally {
+            loadBtn.disabled = false;
+            loadBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg> Charger`;
+        }
+    }
+
+    function noteBadge(n) {
+        const v = parseFloat(n);
+        const cls = v >= 14 ? 'note-high' : v >= 10 ? 'note-mid' : 'note-low';
+        return `<span class="note-badge ${cls}">${v.toFixed(2).replace('.',',')} / 20</span>`;
+    }
+
+    function renderNotes(data) {
+        const container = document.getElementById('notes-container');
+        const statsBar  = document.getElementById('stats-bar');
+
+        // data doit être un tableau [{classe, eleve, note, date?}, …]
+        if (!Array.isArray(data) || data.length === 0) {
+            container.innerHTML = '<div class="state-placeholder"><div class="icon">📭</div>Aucune note trouvée pour cette sélection.</div>';
+            statsBar.style.display = 'none';
+            return;
+        }
+
+        // Calcul stats
+        const notes = data.map(r => parseFloat(r.note)).filter(n => !isNaN(n));
+        const avg   = notes.reduce((a,b) => a+b, 0) / notes.length;
+        const max   = Math.max(...notes);
+
+        document.getElementById('stat-count').textContent = notes.length;
+        document.getElementById('stat-avg').textContent   = avg.toFixed(2).replace('.',',');
+        document.getElementById('stat-max').textContent   = max.toFixed(2).replace('.',',');
+        document.getElementById('stat-avg').style.color  = avg >= 14 ? 'var(--note-high)' : avg >= 10 ? 'var(--note-mid)' : 'var(--note-low)';
+        statsBar.style.display = 'grid';
+
+        // Table
+        let rows = data.map(r => `
+            <tr>
+                <td>${r.classe || '—'}</td>
+                <td>${r.eleve  || '—'}</td>
+                <td>${noteBadge(r.note)}</td>
+                <td style="color:var(--text-muted);font-size:0.8rem;">${r.date || '—'}</td>
+            </tr>`).join('');
+
+        container.innerHTML = `
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Classe</th>
+                            <th>Élève</th>
+                            <th>Note</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>`;
     }
 </script>
-
 </body>
 </html>
